@@ -16,7 +16,7 @@ const WeatherComponent = () => {
           </div>
           <div className="search-bar">
             <input type="text" placeholder='Enter Location'/>
-            <i className="fa-solid fa-magnify-glass"></i>
+            <i className="fa-solid fa-magnifying-glass"></i>
           </div>
         </div>
         <div className="weather">
