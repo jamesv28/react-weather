@@ -49,6 +49,36 @@ const WeatherComponent = () => {
     setLocation(e.target.value);
   };
 
+  const newDate = new Date();
+  const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesdady",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const dayOfWeek = daysOfWeek[newDate.getDay()];
+  const month = months[newDate.getMonth()];
+  const dayOfMonth = newDate.getDate();
+  const formattedDate = `${dayOfWeek}, ${month} ${dayOfMonth}`;
+
   const search = async () => {
     if (location.trim() !== "") {
       const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apikey}`;
@@ -101,7 +131,7 @@ const WeatherComponent = () => {
           </div>
         </div>
         <div className="weather-date">
-          <p>Friday , 3 May</p>
+          <p>{formattedDate}</p>
         </div>
         <div className="weather-data">
           <div className="humidity">
