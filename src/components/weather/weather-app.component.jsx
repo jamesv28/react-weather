@@ -3,12 +3,14 @@ import sunny from "../../assets/images/sunny.png";
 import cloudy from "../../assets/images/cloudy.png";
 import rainy from "../../assets/images/rainy.png";
 import snowy from "../../assets/images/snowy.png";
+import loadingGif from "../../assets/images/loading.gif";
 
 import "./weather-app.styles.css";
 
 const WeatherComponent = () => {
   const [data, setData] = useState({});
   const [location, setLocation] = useState("");
+  const [loading, setLoading] = useState(false);
   const apikey = "bf92a4ef36698dab79b72f7d16c80625";
 
   const images = {
@@ -35,11 +37,13 @@ const WeatherComponent = () => {
 
   useEffect(() => {
     const fetchInitialData = async () => {
+      setLoading(true);
       const defaultLocation = "Denver";
       const url = `https://api.openweathermap.org/data/2.5/weather?q=${defaultLocation}&appid=${apikey}`;
       const res = await fetch(url);
       const defaultData = await res.json();
       setData(defaultData);
+      setLoading(false);
     };
 
     fetchInitialData();
@@ -81,11 +85,17 @@ const WeatherComponent = () => {
 
   const search = async () => {
     if (location.trim() !== "") {
+      setLoading(true);
       const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apikey}`;
       const res = await fetch(url);
       const searchData = await res.json();
-      setData(searchData);
-      setLocation("");
+      if (searchData !== 200) {
+        setData({ notFound: true });
+      } else {
+        setData(searchData);
+        setLoading(false);
+        setLocation("");
+      }
     }
   };
 
@@ -119,36 +129,44 @@ const WeatherComponent = () => {
             <i className="fa-solid fa-magnifying-glass" onClick={search}></i>
           </div>
         </div>
-        <div className="weather">
-          <img src={data.weather ? images[data.weather[0].main] : null} />
-          <div className="weather-type">
-            {data.weather ? data.weather[0].main : null}
-          </div>
-          <div className="temp">
-            {data.main
-              ? Math.floor(Number(data.main.temp) * 1.8 - 459.67)
-              : null}
-          </div>
-        </div>
-        <div className="weather-date">
-          <p>{formattedDate}</p>
-        </div>
-        <div className="weather-data">
-          <div className="humidity">
-            <div className="dat-name">Humidity</div>
-            <i className="fa-solid fa-droplet"></i>
-            <div className="data">
-              {data.main ? `${data.main.humidity}%` : null}
+        {loading ? (
+          <imag className="loader" src={loadingGif} />
+        ) : data.notFound ? (
+          <div className="not-found">Not Found </div>
+        ) : (
+          <>
+            <div className="weather">
+              <img src={data.weather ? images[data.weather[0].main] : null} />
+              <div className="weather-type">
+                {data.weather ? data.weather[0].main : null}
+              </div>
+              <div className="temp">
+                {data.main
+                  ? Math.floor(Number(data.main.temp) * 1.8 - 459.67)
+                  : null}
+              </div>
             </div>
-          </div>
-          <div className="wind">
-            <div className="dat-name">Wind</div>
-            <i className="fa-solid fa-wind"></i>
-            <div className="data">
-              {data.wind ? `${data.wind.speed} km/hr` : null}
+            <div className="weather-date">
+              <p>{formattedDate}</p>
             </div>
-          </div>
-        </div>
+            <div className="weather-data">
+              <div className="humidity">
+                <div className="dat-name">Humidity</div>
+                <i className="fa-solid fa-droplet"></i>
+                <div className="data">
+                  {data.main ? `${data.main.humidity}%` : null}
+                </div>
+              </div>
+              <div className="wind">
+                <div className="dat-name">Wind</div>
+                <i className="fa-solid fa-wind"></i>
+                <div className="data">
+                  {data.wind ? `${data.wind.speed} km/hr` : null}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
